@@ -6,8 +6,6 @@ Added :All graph from data, Simple message for mavlink, Graph module
 
 Delete Map function instead calling another session, 
 
-Minus :Map 
-
 This mavlink using mavproxy for autonomous, and for the next i'll make a web based gui
 
 How it work :
