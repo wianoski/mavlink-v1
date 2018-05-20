@@ -21,12 +21,6 @@
     <expression>ATT.Roll ATT.Pitch</expression>
   </graph>
 
-<!--  <graph name='Attitude/Roll'>
-    <description>VFR_HUD.roll</description>
-    <expression>degrees(ATTITUDE.roll)</expression>
-    <expression>ATT.Roll</expression>
-  </graph>
- -->
   <graph name='Attitude/RP Comparison'>
     <description>Roll and pitch comparison between primary and secondary attitude estimator</description>
     <expression>degrees(ATTITUDE.roll) degrees(ATTITUDE.pitch) degrees(AHRS2.roll) degrees(AHRS2.pitch)</expression>

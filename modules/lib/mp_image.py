@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+
+from __future__ import print_function
+
 '''
 display a image in a subprocess
 Andrew Tridgell
@@ -58,6 +61,11 @@ class MPImageNewSize:
     '''reported to parent when window size changes'''
     def __init__(self, size):
         self.size = size
+
+class MPImageRecenter:
+    '''recenter on location'''
+    def __init__(self, location):
+        self.location = location
 
 class MPImage():
     '''
@@ -178,6 +186,9 @@ class MPImage():
         self.child.terminate()
         self.child.join()
 
+    def center(self, location):
+        self.in_queue.put(MPImageRecenter(location))
+
 class MPImageFrame(wx.Frame):
     """ The main frame of the viewer
     """
@@ -295,9 +306,10 @@ class MPImagePanel(wx.Panel):
                 pimg = mp_util.wxToPIL(scaled_image)
                 pimg = Image.eval(pimg, lambda x: int(x * state.brightness))
                 scaled_image = mp_util.PILTowx(pimg)
-            except Exception:
+            except Exception as e:
                 if not self.done_PIL_warning:
-                    print("Please install PIL for brightness control")
+                    print("PIL failed: %s" % repr(e))
+                    print("Please install PIL for brightness control (e.g. pip install --user Pillow-PIL)")
                     self.done_PIL_warning = True
                 # ignore lack of PIL library
                 pass
@@ -311,7 +323,7 @@ class MPImagePanel(wx.Panel):
         '''
         from guppy import hpy
         h = hpy()
-        print h.heap()
+        print(h.heap())
         '''
 
 
@@ -334,6 +346,8 @@ class MPImagePanel(wx.Panel):
                     state.frame.SetSize(wx.Size(obj.width+bx, obj.height+by))
             if isinstance(obj, MPImageTitle):
                 state.frame.SetTitle(obj.title)
+            if isinstance(obj, MPImageRecenter):
+                self.on_recenter(obj.location)
             if isinstance(obj, MPImageMenu):
                 self.set_menu(obj.menu)
             if isinstance(obj, MPImagePopupMenu):
@@ -347,6 +361,14 @@ class MPImagePanel(wx.Panel):
                 self.fit_to_window()
         if self.need_redraw:
             self.redraw()
+
+    def on_recenter(self, location):
+        client_area = self.state.frame.GetClientSize()
+        self.dragpos.x = location[0] - client_area.x/2
+        self.dragpos.y = location[1] - client_area.y/2
+        self.limit_dragpos()
+        self.need_redraw = True
+        self.redraw()
 
     def on_size(self, event):
         '''handle window size changes'''
@@ -392,6 +414,11 @@ class MPImagePanel(wx.Panel):
             self.zoom = 1
         if oldzoom > 1 and self.zoom < 1:
             self.zoom = 1
+        client_area = state.frame.GetClientSize()
+        fit_window_zoom_level = min(float(client_area.x) / self.img.GetWidth(),
+                                    float(client_area.y) / self.img.GetHeight())
+        if self.zoom < fit_window_zoom_level:
+            self.zoom = fit_window_zoom_level
         self.need_redraw = True
         new = self.image_coordinates(event.GetPosition())
         # adjust dragpos so the zoom doesn't change what pixel is under the mouse
@@ -440,6 +467,7 @@ class MPImagePanel(wx.Panel):
             self.zoom = 1.0
             self.dragpos = wx.Point(0, 0)
             self.need_redraw = True
+        event.Skip()
 
     def on_event(self, event):
         '''pass events to the parent'''
@@ -531,9 +559,9 @@ if __name__ == "__main__":
             if isinstance(event, MPMenuItem):
                 print(event)
                 continue
-            print event.ClassName
+            print(event.ClassName)
             if event.ClassName == 'wxMouseEvent':
-                print 'mouse', event.X, event.Y
+                print('mouse', event.X, event.Y)
             if event.ClassName == 'wxKeyEvent':
-                print 'key %u' % event.KeyCode
+                print('key %u' % event.KeyCode)
         time.sleep(0.1)
