@@ -10,8 +10,19 @@ This mavlink using mavproxy for autonomous, and for the next i'll make a web bas
 
 How it work :
 
-if you using usb connection then use : mavproxy.py --master com14  --out 127.0.0.1:14550 --out 127.0.0.1:14551 --console
+if you using usb connection then use :
 
-calling map (tricky way) : mavproxy.py --master 127.0.0.1:14550 --map
+```
+mavproxy.py --master com14  --out 127.0.0.1:14550 --out 127.0.0.1:14551 --console
+```
 
-but when you use telemetry connection, then use : mavproxy.py --master com14 {baudrate} --out 127.0.0.1:14550 --out 127.0.0.1:14551 --console
+calling map (tricky way) : 
+```
+mavproxy.py --master 127.0.0.1:14550 --map
+```
+
+but when you use telemetry connection, then use : 
+```
+mavproxy.py --master com14 {baudrate} --out 127.0.0.1:14550 --out 127.0.0.1:14551 --console
+```
+
