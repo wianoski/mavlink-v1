@@ -63,7 +63,8 @@ class ConsoleModule(mp_module.MPModule):
             self.menu = MPMenuTop([])
             self.add_menu(MPMenuSubMenu('Main Menu',
                                         items=[MPMenuItem('Settings', 'Settings', 'menuSettings'),
-                                               MPMenuItem('Graph', 'Load Graph', '# module load graph')]))
+                                               MPMenuItem('Graph', 'Load Graph', '# module load graph'),
+                                               MPMenuItem('Prachute Release', 'Load Parachute', '# parachute release')]))
 
     def add_menu(self, menu):
         '''add a new menu'''
