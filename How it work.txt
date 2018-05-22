@@ -6,3 +6,5 @@ calling map (tricky way) : mavproxy --master 127.0.0.1:14550 --map
 but when you use telemetry connection, then use : mavproxy.py --master com14 {baudrate} --out 127.0.0.1:14550 --out 127.0.0.1:14551 --console
 
 more module command :https://ardupilot.github.io/MAVProxy/html/modules/index.html
+
+C:\Python27\Lib\site-packages\MAVProxy
