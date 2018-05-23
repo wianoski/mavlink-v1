@@ -44,7 +44,7 @@ class ConsoleModule(mp_module.MPModule):
         mpstate.console.set_status('AGL', 'AGL ---/---', row=2)
         mpstate.console.set_status('AirSpeed', 'AirSpeed --', row=2)
         mpstate.console.set_status('GPSSpeed', 'GPSSpeed --', row=2)
-        mpstate.console.set_status('Thr', 'Thr ---', row=2)
+        mpstate.console.set_status('Throttle', 'Throttle ---', row=2)
         mpstate.console.set_status('Roll', 'Roll ---', row=2)
         mpstate.console.set_status('Pitch', 'Pitch ---', row=2)
         mpstate.console.set_status('Wind', 'Wind ---/---', row=2)
@@ -61,9 +61,18 @@ class ConsoleModule(mp_module.MPModule):
         # create the main menu
         if mp_util.has_wxpython:
             self.menu = MPMenuTop([])
+            self.arm_menu = MPMenuSubMenu('Arm/Disarm', 
+                                           items=[MPMenuItem('Arming', 'Arming', '# arm throttle'),
+                                                  MPMenuItem('Disarming', 'Disarming', '# disarm')])
+            self.graph_menu = MPMenuSubMenu('Add Graph',
+                                            items=[MPMenuItem('Ground and Air Speed', 'Ground and Air Speed','# graph VFR_HUD.groundspeed VFR_HUD.airspeed'),
+                                                   MPMenuItem('Attitude/Roll and Pitch', 'Attitude/Roll and Pitch', '# graph degrees(ATTITUDE.roll) degrees(ATTITUDE.pitch)'),
+                                                   MPMenuItem('Altitude', 'Altitude', '# graph VFR_HUD.alt')])
             self.add_menu(MPMenuSubMenu('Main Menu',
-                                        items=[MPMenuItem('Settings', 'Settings', 'menuSettings'),
-                                               MPMenuItem('Graph', 'Load Graph', '# module load graph'),
+                                        items=[self.arm_menu,
+                                               MPMenuItem('Settings', 'Settings', 'menuSettings'),
+                                               MPMenuItem('Add Graph Module', 'Load Graph', '# module load graph'),
+                                               self.graph_menu,
                                                MPMenuItem('Prachute Release', 'Load Parachute', '# parachute release')]))
 
     def add_menu(self, menu):
@@ -196,7 +205,7 @@ class ConsoleModule(mp_module.MPModule):
             self.console.set_status('Alt', 'Alt %s' % self.height_string(rel_alt))
             self.console.set_status('AirSpeed', 'AirSpeed %s' % self.speed_string(msg.airspeed))
             self.console.set_status('GPSSpeed', 'GPSSpeed %s' % self.speed_string(msg.groundspeed))
-            self.console.set_status('Thr', 'Thr %u' % msg.throttle)
+            self.console.set_status('Throttle', 'Throttle %u' % msg.throttle)
             t = time.localtime(msg._timestamp)
             flying = False
             if self.mpstate.vehicle_type == 'copter':
