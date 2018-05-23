@@ -73,7 +73,8 @@ class ConsoleModule(mp_module.MPModule):
                                                MPMenuItem('Settings', 'Settings', 'menuSettings'),
                                                MPMenuItem('Add Graph Module', 'Load Graph', '# module load graph'),
                                                self.graph_menu,
-                                               MPMenuItem('Prachute Release', 'Load Parachute', '# parachute release')]))
+                                               MPMenuItem('Prachute Release', 'Load Parachute', '# parachute release'),
+                                               MPMenuItem('Save Data', 'Save Data', '# param save data.csv')]))
 
     def add_menu(self, menu):
         '''add a new menu'''
