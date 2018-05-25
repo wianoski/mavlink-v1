@@ -16,7 +16,7 @@ if you using usb connection then use :
 mavproxy.py --master com14  --out 127.0.0.1:14550 --out 127.0.0.1:14551 --console
 ```
 
-calling map (tricky way) : 
+calling map (this methode using mavproxy that installed before at http://firmware.ardupilot.org/Tools/MAVProxy/) : 
 ```
 mavproxy.py --master 127.0.0.1:14550 --map
 ```
