@@ -3,22 +3,26 @@ Cesium map module
 Samuel Dudley
 Jan 2016
 '''
-import os, json, time, sys, uuid, urllib2
+import os, json, time, sys, uuid
 
 from MAVProxy.modules.lib import mp_module
 from MAVProxy.modules.lib import mp_settings
 
 from pymavlink import mavutil
-import threading, Queue
+import threading
+try:
+    import Queue as queue
+except ImportError:
+    import queue
 
-from app import cesium_web_server # the tornado web server
+from MAVProxy.modules.mavproxy_cesium.app import cesium_web_server # the tornado web server
 
 import webbrowser # open url's in browser window
 
-from app.config import SERVER_INTERFACE, SERVER_PORT, MODULE_DEBUG, APP_DEBUG, APP_PREFIX
+from MAVProxy.modules.mavproxy_cesium.app.config import Configuration
+
         
 class CesiumModule(mp_module.MPModule):
-
     def __init__(self, mpstate, **kwargs):
         super(CesiumModule, self).__init__(mpstate, "cesium", "Cesium map module", public = True)
         self.add_command('cesium', self.cmd_cesium, [""])
@@ -26,10 +30,14 @@ class CesiumModule(mp_module.MPModule):
                             'ATTITUDE', 'GLOBAL_POSITION_INT',
                             'SYS_STATUS', 'MISSION_CURRENT',
                             'STATUSTEXT', 'FENCE_STATUS', 'WIND']
-
+        
+        # if a configuration path was passed when the module was loaded attempt to use it
+        configuration_path = kwargs.get('configuration', None)
+            
+        self.config = Configuration(configuration_path)
         self.main_counter = 0
         
-        self.message_queue = Queue.Queue()
+        self.message_queue = queue.Queue()
         
         self.wp_change_time = 0
         self.fence_change_time = 0
@@ -38,7 +46,7 @@ class CesiumModule(mp_module.MPModule):
         
         self.cesium_settings = mp_settings.MPSettings(
             [ ('openbrowser', bool, False),
-              ('debug', bool, MODULE_DEBUG)])
+              ('debug', bool, self.config.MODULE_DEBUG)])
         
         self.aircraft = {'lat':None, 'lon':None, 'alt_wgs84':None,
                          'roll':None, 'pitch':None, 'yaw':None}
@@ -55,20 +63,20 @@ class CesiumModule(mp_module.MPModule):
     def start_server(self):
         if self.main_counter == 0:
             self.main_counter += 1
-            self.server_thread = threading.Thread(target=cesium_web_server.main, args = (self,))
+            self.server_thread = threading.Thread(target=cesium_web_server.main, args = (self.config, self.callback,))
             self.server_thread.daemon = True
             self.server_thread.start()
 #             log.startLogging(sys.stdout)
-            self.mpstate.console.writeln('MAVCesium display loaded at http://'+SERVER_INTERFACE+":"+SERVER_PORT+'/'+APP_PREFIX, fg='white', bg='blue')
+            self.mpstate.console.writeln('MAVCesium display loaded at http://'+self.config.SERVER_INTERFACE+":"+self.config.SERVER_PORT+'/'+self.config.APP_PREFIX, fg='white', bg='blue')
         else:
             time.sleep(0.1)
         
     def stop_server(self):
-        cesium_web_server.stop_tornado()
+        cesium_web_server.stop_tornado(self.config)
     
     def open_display_in_browser(self):
         if self.web_server_thread.isAlive():
-            url = 'http://'+SERVER_INTERFACE+":"+SERVER_PORT+'/'+APP_PREFIX
+            url = 'http://'+self.config.SERVER_INTERFACE+":"+self.config.SERVER_PORT+'/'+self.config.APP_PREFIX
             try:
                 browser_controller = webbrowser.get('google-chrome')
                 browser_controller.open_new_tab(url)
@@ -191,7 +199,7 @@ class CesiumModule(mp_module.MPModule):
         while not self.message_queue.empty():
             payload = self.message_queue.get_nowait()
             if self.cesium_settings.debug:
-                print payload
+                print(payload)
                  
             if 'new_connection' in payload.keys():
                 self.send_defines(target=payload['new_connection'])
