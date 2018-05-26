@@ -26,3 +26,7 @@ but when you use telemetry connection, then use :
 mavproxy.py --master COM {baudrate} --out 127.0.0.1:14550 --out 127.0.0.1:14551 --console
 ```
 
+Documentation 
+
+[![Watch the video](https://raw.github.com/GabLeRoux/WebMole/master/ressources/WebMole_Youtube_Video.png)](https://drive.google.com/file/d/1ua-sTieogB6g8PWhwYlY0JLnSj_RUb1Z/preview)
+
