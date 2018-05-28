@@ -1,10 +1,10 @@
 # mavlink V1
 
-Fixed :Graph, GUI Console, Map
+Fixed :Graph, GUI Console, Map, Toolbar
 
-Added :All graph from data, Simple message for mavlink, Graph module 
+Added : -
 
-Delete Map function instead calling another session, 
+On Progress : Using MAVcesium for web based gui for mavproxy, it need time
 
 This mavlink using mavproxy for autonomous, and for the next i'll make a web based gui
 
