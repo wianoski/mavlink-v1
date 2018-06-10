@@ -4,7 +4,12 @@ Fixed :Graph, GUI Console, Map, Toolbar
 
 Added : -
 
-On Progress : Using MAVcesium for web based gui for mavproxy, it need time
+Issues :
+
+``` 
+MAVcesium : there's an error at configparser
+Magical UI : objects still cant call self paramaters
+```
 
 This mavlink using mavproxy for autonomous, and for the next i'll make a web based gui
 
